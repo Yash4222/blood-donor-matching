@@ -1,23 +1,30 @@
 const mongoose = require('mongoose');
 
-const bloodGroups = ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'];
+const GROUPS = ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'];
 
 const donorSchema = new mongoose.Schema(
   {
-    name: { type: String, required: [true, 'Name is required'], trim: true, maxlength: 80 },
-    bloodGroup: { type: String, required: true, enum: bloodGroups },
-    age: { type: Number, required: true, min: 18, max: 65 },
-    phone: { type: String, required: true, trim: true, maxlength: 24 },
-    email: { type: String, trim: true, lowercase: true, maxlength: 120, default: '' },
-    city: { type: String, required: true, trim: true, maxlength: 80 },
-    state: { type: String, trim: true, maxlength: 80, default: '' },
-    lastDonation: { type: Date, default: null },
+    name: { type: String, required: [true, 'Name is required'], trim: true },
+    bloodGroup: {
+      type: String,
+      required: [true, 'Blood group is required'],
+      enum: { values: GROUPS, message: 'Invalid blood group' },
+    },
+    city: { type: String, required: [true, 'City is required'], trim: true },
+    phone: {
+      type: String,
+      required: [true, 'Phone is required'],
+      match: [/^[0-9]{10}$/, 'Phone must be 10 digits'],
+    },
+    age: {
+      type: Number,
+      required: [true, 'Age is required'],
+      min: [18, 'Donor must be at least 18'],
+      max: [65, 'Donor must be at most 65'],
+    },
     available: { type: Boolean, default: true },
-    notes: { type: String, trim: true, maxlength: 300, default: '' }
   },
   { timestamps: true }
 );
-
-donorSchema.index({ bloodGroup: 1, city: 1, available: 1 });
 
 module.exports = mongoose.model('Donor', donorSchema);

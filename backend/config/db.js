@@ -1,9 +1,13 @@
 const mongoose = require('mongoose');
 
-async function connectDatabase() {
-  const uri = process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/blood_matching';
-  await mongoose.connect(uri);
-  console.log(`MongoDB connected: ${mongoose.connection.host}`);
-}
+const connectDB = async () => {
+  try {
+    await mongoose.connect(process.env.MONGO_URI);
+    console.log('MongoDB connected');
+  } catch (err) {
+    console.error('MongoDB error:', err.message);
+    process.exit(1);
+  }
+};
 
-module.exports = connectDatabase;
+module.exports = connectDB;
